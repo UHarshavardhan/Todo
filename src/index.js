@@ -5,12 +5,15 @@ import App from './App';
 import SignUp from './Components/signup';
 import LogIn from './Components/login';
 import reportWebVitals from './reportWebVitals';
+import Sidebar from './Components/Sidebar';
+import Todo from './Pages/todo'
+import Home from './Pages/Home'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    {/* <App /> */}
-   <LogIn/>
+    <App />
+ 
   </React.StrictMode>
 );
 

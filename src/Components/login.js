@@ -1,78 +1,80 @@
-import React,{useEffect,useState} from "react";
-import image1 from '../Assests/ach3 1.png'
-import { toast, ToastContainer } from "react-toastify"; // Include ToastContainer
-import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import image1 from "../Assests/ach3 1.png";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
-function LogIn(){
+function LogIn() {
+  const navigate = useNavigate();
 
-    const inputFields = [
-       
-        { placeholder: "Enter Your Mail Id", name: "email", type: "email" },
-        { placeholder: "Password", name: "password", type: "password" },
-       
-      ];
+  const inputFields = [
+    { placeholder: "Enter Your Mail Id", name: "email", type: "email" },
+    { placeholder: "Password", name: "password", type: "password" },
+  ];
 
-    const [formData, setFormData] = useState({
-        email: "",
-        password: "",
-      });
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
 
-      const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-          ...formData,
-          [name]: value,
-        });
-      };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
 
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post("http://localhost:3000/api/v1/login", formData);
 
-      const handleSubmit = async () => {
-        try {
+      if (response.status === 200) {
+        const { token, user } = response.data;
+        console.log(response.data);
+        localStorage.setItem("token", token);
+        localStorage.setItem("userId", user.userId); // Store the user ID
+        localStorage.setItem("userName", user.name); // Store the user name
+        localStorage.setItem("userEmail", user.email); // Store the user email
 
-    
-          const response = await axios.post("http://localhost:3000/api/v1/login", formData);
-           console.log(response.error);
-          if (response.status === 200) {
-            toast.success("Login Sucessfull"); 
-          }
-        } catch (error) {
-          console.log(error)
-          const errorMessage = error?.response?.data?.message || 
-          "An unexpected error occurred";
-          toast.error(errorMessage); 
-        }
-      };
-    
-    
+        toast.success("Login Successful");
 
-    return(
-        <>
- <ToastContainer position="top-right" autoClose={3000} />
-      
-      <div className="main-componet flex flex-row p-24">
-       
+        // Navigate to the home page after successful login
+        navigate("/home");
+      }
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.message || "An unexpected error occurred";
+      toast.error(errorMessage);
+    }
+  };
 
-        <div className="form flex flex-col gap-6  mt-9">
-          <h5 className="text-5xl">Sign In</h5>
+  return (
+    <>
+      <ToastContainer position="top-right" autoClose={3000} />
+
+      <div className="main-component grid grid-cols-1 lg:grid-cols-2 items-center p-6 lg:p-24 min-h-screen bg-gradient-to-r from-blue-200 to-indigo-200">
+        {/* Form Section */}
+        <div className="form flex flex-col gap-6 mx-auto max-w-md lg:max-w-lg">
+          <h5 className="text-3xl lg:text-5xl text-center">Sign In</h5>
 
           {inputFields.map((field, index) => (
-            <div key={index}>
+            <div key={index} className="w-full">
               <input
-                className="border w-[500px] h-[40px] rounded-xl border-black p-4"
+                className="border w-full h-[40px] lg:h-[50px] rounded-xl border-gray-400 p-4 lg:text-lg lg:w-96"
                 type={field.type}
                 name={field.name}
                 required
                 placeholder={field.placeholder}
                 onChange={handleChange}
               />
-              <div style={{ color: "red" }}></div>
             </div>
           ))}
 
-          <div>
+          <div className="text-center">
             <button
-              className="bg-[#FF9090] w-[129px] h-[40px] rounded-lg"
+              className="bg-[#FF9090] w-[129px] h-[40px] rounded-lg text-white shadow-lg hover:bg-[#FF7070]"
               onClick={handleSubmit}
             >
               Login
@@ -80,15 +82,17 @@ function LogIn(){
           </div>
         </div>
 
-
-        <div class="ml-[100px]">
-          <img src={image1} alt="user image" width={700} height={400} />
+        {/* Image Section */}
+        <div className="flex justify-center mt-6 lg:mt-0">
+          <img
+            src={image1}
+            alt="user illustration"
+            className="max-w-full h-auto rounded-lg shadow-lg"
+          />
         </div>
       </div>
-        </>
-
-    )
-
+    </>
+  );
 }
 
 export default LogIn;
